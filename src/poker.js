@@ -2,11 +2,11 @@ var poker = (function(){
     var validSuits = ['h', 'd', 'c', 's'];
     var validCards = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
     var analyze = function(handStr){
-        if (!isHandValid(handStr)){
-            return "invalid hand";
-        }
-        console.log(handStr);
+        if (!isHandValid(handStr)) return "invalid hand";
+        var hand = createHand(handStr);
 
+        if (hasAPair(hand)) return "One Pair";
+        return "High Card";
     };
     var isHandValid = function(hand){
         var cards = hand.split(' '),
@@ -36,6 +36,16 @@ var poker = (function(){
             })
         }
         return hand;
+    }
+    var hasAPair = function(hand){
+        var tHand=hand;
+        for (var i =0; i < hand.length; i++){
+            tHand = tHand.slice(i);
+            for (var j = 0; j < tHand.length; j++){
+                if (tHand[j].value == hand[i].value) return true;
+            }
+        }
+        return false;
     }
     return {
         analyze: analyze,

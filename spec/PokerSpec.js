@@ -23,6 +23,9 @@ describe("Poker Analyzer", function () {
         });
     });
     describe("analysis of hand", function () {
+        it ("should validate a high card hand",function(){
+           expect(poker.analyze('4h 6d 8s Js Ah')).toEqual('High Card');
+        });
         it("should validate a pair",function(){
            expect(poker.analyze('8h 8d 7s Kh 9s')).toEqual('One Pair');
         });
