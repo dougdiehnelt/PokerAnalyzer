@@ -48,7 +48,7 @@ describe("Poker Analyzer", function () {
             expect(poker.analyze('8h 8d 8s 8c 9s')).toEqual('Four of a Kind');
         });
         it("should validate a straight flush",function(){
-            expect(poker.analyze('8h Jh 9h 10h Qh')).toEqual('Straight Flush');
+            expect(poker.analyze('8h jH 9h 10h Qh')).toEqual('Straight Flush');
         });
     });
 });

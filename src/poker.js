@@ -4,11 +4,11 @@ var poker = (function () {
         analyze = function (handStr) {
             if (!isHandValid(handStr)) return 'invalid hand';
             var hand = createHand(handStr);
-            if (isStraight(hand) && isFlush(hand)) return 'Straight Flush';
+            if (hand.isStraight && hand.isFlush) return 'Straight Flush';
             if (numberOfQty(hand, 4) === 1) return 'Four of a Kind';
             if (numberOfQty(hand, 3) === 1 && numberOfQty(hand, 2) == 1) return 'Full House';
-            if (isFlush(hand)) return 'Flush';
-            if (isStraight(hand)) return 'Straight';
+            if (hand.isFlush) return 'Flush';
+            if (hand.isStraight) return 'Straight';
             if (numberOfQty(hand, 3) === 1) return 'Three of a Kind';
             if (numberOfQty(hand, 2) === 2) return 'Two Pairs';
             if (numberOfQty(hand, 2) === 1) return 'One Pair';
@@ -26,6 +26,8 @@ var poker = (function () {
             if (seenCards.length != cards.length) return false; //duplicate card in the hand
             return allCardsValid;
         },
+        // check to see if card is valid
+        // input is '8h' or 'As' where 8 and A are the value and h and s are the suits
         cardValid = function (card) {
             var suit = card.substr(card.length - 1).toLowerCase(),
                 value = card.substr(0, card.length - 1).toUpperCase();
@@ -33,7 +35,7 @@ var poker = (function () {
         },
         // pre-process the hand to make for easier analysis
         createHand = function (handStr) {
-            var hand = { cards: {}, suits: {}, seq: [] },
+            var hand = { cards: {}, suits: {}, seq: [], isStraight: true, isFlush: false },
                 suit, value,
                 cards = handStr.split(' ');
             for (var i = 0; i < cards.length; i++) {
@@ -51,6 +53,16 @@ var poker = (function () {
                     hand.suits[suit] = 1;
                 }
             }
+            hand.seq.sort(function (a, b) {
+                return a - b
+            });
+            for (var i = 1; i < 5; i++) {
+                //make sure that all the cards are in sequential order
+                hand.isStraight &= ((hand.seq[i - 1] + 1) == hand.seq[i]);
+            }
+            for (var key in hand.suits) {
+                if (hand.suits[key] === 5) hand.isFlush = true;
+            }
             return hand;
         },
         numberOfQty = function (hand, qty) {
@@ -59,31 +71,6 @@ var poker = (function () {
                 if (hand.cards[key] === qty) numQty++;
             }
             return numQty;
-        },
-        isFlush = function (hand) {
-            for (var key in hand.suits) {
-                if (hand.suits[key] === 5) return true;
-            }
-            return false;
-        },
-        isStraight = function (hand) {
-            var straight = [], card;
-            for (var key in hand.cards) {
-                card = key.substr(1);
-                if (!isNaN(card)) straight.push(parseInt(card));
-                else {
-                    // if not a number, map the face cards to index of array + 11
-                    straight.push(['J', 'Q', 'K', 'A'].indexOf(card) + 11);
-                }
-            }
-            straight.sort(function (a, b) {
-                return a - b
-            });
-            for (var i = 1; i < 5; i++) {
-                //make sure that all the cards are in sequential order
-                if ((straight[i - 1] + 1) != straight[i]) return false;
-            }
-            return true;
         };
     return {
         analyze: analyze,
